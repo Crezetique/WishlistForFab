@@ -10,7 +10,7 @@
 let wishlistForFab = new function() {
     //#region Extension Settings
 
-        const extensionVersion = '1.0'
+        const extensionVersion = '1.0.1'
         const localStorageName_Wishlist = 'wishlistCustom';
 
         const react_root = __SKFB_REACT_ROOT;
@@ -570,4 +570,4 @@ let wishlistForFab = new function() {
 
     //#endregion Initialization
 };
-window.onload = wishlistForFab.init();
+setTimeout(() => { wishlistForFab.init() }, 650);
