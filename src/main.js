@@ -10,7 +10,7 @@
 let wishlistForFab = new function() {
     //#region Extension Settings
 
-        const extensionVersion = '1.0.1'
+        const extensionVersion = '1.1.0'
         const localStorageName_Wishlist = 'wishlistCustom';
 
         const react_root = __SKFB_REACT_ROOT;
@@ -19,19 +19,7 @@ let wishlistForFab = new function() {
 
         const selector_NavActionMenu = '.fabkit-MegaMenu-actions';
         const selector_Sidebar = 'aside.uOXrHl_o .ny_JIXbd';
-
-        const selector_PageListing_Title = 'h1';
-        const selector_PageListing_Category = 'nav.fabkit-Breadcrumb-root a';
-        const selector_PageListing_Seller = '.fabkit-Badge-root .fabkit-Badge-label';
-        // const selector_PageListing_Tags = '.fabkit-Stack--column ul li .fabkit-Tag-label';
-        const selector_PageListing_Thumbnail = 'ol.gxEZLyeW li:first-child .FJXTLkFZ img';
-
         const selector_StoreListing = '.fabkit-Blades-bladesColumnsWrapper .fabkit-BladesColumns-root .fabkit-Thumbnail--16\\/9:has(a), .fabkit-ResultGrid-root li .fabkit-Thumbnail--16\\/9:has(a), .fabkit-ResultGrid-col--sm .fabkit-Thumbnail--16\\/9:has(.fabkit-Thumbnail-item)';
-        const selector_StoreListing_Strip = '.fabkit-Stack-root'
-
-        const selector_StoreListing_Title = '.fabkit-Typography-ellipsisWrapper';
-        const selector_StoreListing_Category = '.fabkit-Typography-root.fabkit-typography--align-start.fabkit-Text--regular';
-        const selector_StoreListing_Seller = '.fabkit-Thumbnail--top-left a';
 
     //#endregion Extension Settings
     //#region Data Handling
@@ -56,54 +44,51 @@ let wishlistForFab = new function() {
         let cache_ListingThumbnail = null;
 
         let filtersWishlistAvailable = [];
-        let filtersWishlistReserve = ['2D-Assets', '3D-Model', 'Animations', 'Atlases', 'Audio', 'Brushes', 'Decals', 'Education-&-Tutorial', 'Environment', 'Game-Systems', 'Game-Templates', 'HDRI', 'Material-&-Textures', 'Smart-Assets', 'Tool-&-Plugins', 'UI', 'VFX'];	
+        let filtersWishlistReserve = ['on-sale', '2d-asset', '3d-model', 'animation', 'atlas', 'audio', 'brush', 'decal', 'education-tutorial', 'environment', 'game-systems', 'game-template', 'hdri', 'material', 'smart-asset', 'tool-&-plugin', 'ui', 'vfx'];	
 
         this.isStoreListingPage = function() {
             return window.location.pathname.split('/')[1] === 'listings';
         }
 
         this.isInWishlist = function(id) {
-            return wishlistForFab.dataWishlist.find((element) => element.id === id) !== undefined;
+            return wishlistForFab.dataWishlist.find((element) => element === id) !== undefined;
         }
 
         function getPageListingID() {
             return window.location.pathname.split('/')[2];
         }
 
-        function getPageListingData() {
-            if ( !wishlistForFab.isStoreListingPage() || el_Sidebar === null ) {
-                return null;
+        async function getLiveListingData(id) {
+            const url = `https://www.fab.com/i/listings/${id}`;
+            
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Response status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                return {
+                    id: data.uid,
+                    name: data.title,
+                    seller: data.user.sellerName,
+                    thumbnail: data.thumbnails[0].images[2].url,
+                    category: data.listingType,
+                    tags: data.tags,
+                    price: data.startingPrice.price,
+                    discountedPrice: data.startingPrice.discountedPrice
+                };
+            } catch (error) {
+                console.error(error.message);
             }
-
-            let image = document.querySelector(selector_PageListing_Thumbnail);
-            let image_src = image === null ? '' : image.src
-
-            return {
-                id: getPageListingID(),
-                name: el_Sidebar.querySelector(selector_PageListing_Title).innerHTML,
-                category: el_Sidebar.querySelector(selector_PageListing_Category).innerHTML,
-                seller: el_Sidebar.querySelector(selector_PageListing_Seller).innerHTML,
-                price: '',
-                thumbnail: image_src,
-            };
         }
-        
-        function getStoreListingData(element) {
-            let seller;
-            if ( window.location.pathname.split('/')[1] === 'sellers' ) {
-                seller = window.location.pathname.split('/')[2];
-            } else {
-                seller = element.querySelector(selector_StoreListing_Seller).lastChild.innerHTML;
-            }
 
-            return {
-                id: element.getAttribute('wishlist-id'),
-                name: element.querySelector(selector_StoreListing_Title).innerHTML,
-                category: element.querySelector(selector_StoreListing_Category).lastChild.textContent,
-                seller: seller,
-                price: '',
-                thumbnail: element.querySelector('img').src,
-            };
+        function formatCategory(category) {
+            return category
+                .replace(/-/g, ' ')
+                .replace(/and/g, '&')
+                .replace(/(?:^|\s)\w/g, (letter) => { return letter.toUpperCase(); } )
+                .replace(/(2d|3d|Ui|Vfx|Hdri)/, ($1) => { return $1.toUpperCase()} );
         }
 
     //#endregion Data Handling
@@ -150,6 +135,7 @@ let wishlistForFab = new function() {
                     <textarea id="wishlist_export" aria-hidden="true" class="fabkit-InputContainer-root fabkit-InputContainer--md fabkit-InputContainer--fullWidth" readonly></textarea>
                     <div class="wishlist-message-empty fabkit-Heading--lg">Your wishlist is empty.</div>
                     <ul id="tab_wishlist_filters" class="fabkit-Stack-root fabkit-Stack--align_center fabkit-scale--gapX-layout-3 fabkit-scale--gapY-layout-3 fabkit-Stack--wrap"></ul>
+                    <div class="wishlist-message-filter-zero fabkit-Heading--lg">No results with selected filter(s).</div>
                     <div class="oHi6n5rt fabkit-Grid-root">
                         <div class="GHXOxKbm">
                             <ul id="tab_wishlist_content" class="fabkit-ResultGrid-root fabkit-ResultGrid-col--sm fabkit-Grid-root fabkit-scale--gapX-layout-6 fabkit-scale--gapY-layout-6"></ul>
@@ -172,9 +158,27 @@ let wishlistForFab = new function() {
             </a>
         `
 
+        function formatSingleWishlistPlaceholder(id) {
+            return `
+                <li class="wishlist-listing wishlist-placeholder" wishlist-id="${id}">
+                    <div class="fabkit-Stack-root fabkit-scale--gapX-layout-3 fabkit-scale--gapY-layout-3 fabkit-Stack--column hTu1xoWw">
+                        <div class="fabkit-Thumbnail-root fabkit-Thumbnail--16/9 fabkit-scale--radius-3 Vq2qCiz2">
+                            <a class="fabkit-Thumbnail-root fabkit-Stack--fullWidth fabkit-Stack--fullHeight" href="/listings/${id}">
+                                <div class="fabkit-Surface-root fabkit-Skeleton-root fabkit-Thumbnail-placeholder --emphasis0">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="fabkit-Stack-root fabkit-scale--gapX-spacing-1 fabkit-scale--gapY-spacing-1 fabkit-Stack--column">
+                        <div class="fabkit-Typography-root fabkit-typography--align-start fabkit-typography--intent-primary fabkit-Heading--md fabkit-Surface-root fabkit-scale--radius-1 fabkit-Skeleton-root --emphasisbackground-elevated-high-default" aria-hidden="true" role="presentation" tabindex="-1" style="width: 70%;">name</div>
+                        <div class="fabkit-Typography-root fabkit-typography--align-start fabkit-typography--intent-primary fabkit-Text--md fabkit-Text--regular fabkit-Surface-root fabkit-scale--radius-1 fabkit-Skeleton-root --emphasisbackground-elevated-high-default" aria-hidden="true" role="presentation" tabindex="-1" style="width: 30%;">type</div>
+                    </div>
+                </li>
+            `;
+        }
+
         function formatSingleWishlistListing(data) {
             return `
-                <li class="wishlist-listing" listing-category="${data.category.replace(/ /g, '-')}" wishlist-id="${data.id}" wishlist-state="${wishlistForFab.isInWishlist(data.id)}">
+                <li class="wishlist-listing ${data.discountedPrice !== null ? 'wishlist-onsale' : ''}" listing-category="${data.category.replace(/ /g, '-')}" wishlist-id="${data.id}" wishlist-state="${wishlistForFab.isInWishlist(data.id)}">
                     <div class="fabkit-Stack-root fabkit-scale--gapX-layout-3 fabkit-scale--gapY-layout-3 fabkit-Stack--column hTu1xoWw"><div class="fabkit-Thumbnail-root fabkit-Thumbnail--16/9 fabkit-scale--radius-3 Vq2qCiz2">
                         <a class="fabkit-Thumbnail-root fabkit-Stack--fullWidth fabkit-Stack--fullHeight" href="/listings/${data.id}">
                             <img src="${data.thumbnail}">
@@ -191,10 +195,33 @@ let wishlistForFab = new function() {
                     <div class="fabkit-Stack-root fabkit-Stack--align_start fabkit-scale--gapX-spacing-1 fabkit-scale--gapY-spacing-1 fabkit-Stack--fullWidth fabkit-Stack--column">
                         <div class="fabkit-Stack-root fabkit-Stack--fullWidth fabkit-Stack--column"><div class="fabkit-Stack-root fabkit-Stack--align_center fabkit-Stack--justify_space-between fabkit-scale--gapX-spacing-5 fabkit-scale--gapY-spacing-5 fabkit-Stack--fullWidth JCBmZ1xu">
                             <a class="fabkit-Typography-root fabkit-typography--align-start fabkit-typography--intent-primary fabkit-Typography--ellipsis fabkit-Heading--sm qDOIxHMs fabkit-Focusable-root" href="/listings/${data.id}">
-                            <div class="fabkit-Typography-ellipsisWrapper">${data.name}</div>
+                                <div class="fabkit-Typography-ellipsisWrapper">
+                                    ${data.name}
+                                </div>
                             </a>
                         </div>
-                        <div class="fabkit-Typography-root fabkit-typography--align-start fabkit-typography--intent-secondary fabkit-Text--md fabkit-Text--regular fabkit-Stack-root fabkit-Stack--align_center fabkit-scale--gapX-spacing-2 fabkit-scale--gapY-spacing-2">${data.category}</div>
+                        <div class="fabkit-Typography-root fabkit-typography--align-start fabkit-typography--intent-secondary fabkit-Text--md fabkit-Text--regular fabkit-Stack-root fabkit-Stack--align_center fabkit-scale--gapX-spacing-2 fabkit-scale--gapY-spacing-2 wishlist-capitalize">
+                            ${ formatCategory(data.category) }
+                        </div>
+                        <div class="fabkit-Stack-root fabkit-scale--gapX-spacing-2 fabkit-scale--gapY-spacing-2 NwV6IVCa">
+                            <div class="fabkit-Stack-root fabkit-scale--gapX-spacing-1 fabkit-scale--gapY-spacing-1 YHrg99Kk">
+                            ${data.price === 0 ? 
+                                `
+                                    <div class="fabkit-Typography-root fabkit-typography--align-start fabkit-typography--intent-primary fabkit-Text--lg fabkit-Text--regular">Free</div>
+                                ` : 
+                                `
+                                    <div class="fabkit-Typography-root fabkit-typography--align-start fabkit-typography--intent-secondary fabkit-Text--md fabkit-Text--regular">From </div>
+                                    ${data.discountedPrice !== null ? 
+                                        `
+                                            <div class="fabkit-Typography-root fabkit-typography--align-start fabkit-typography--intent-primary fabkit-Text--lg fabkit-Text--regular">$${data.discountedPrice} </div>
+                                            <div class="fabkit-Typography-root fabkit-typography--align-start fabkit-typography--intent-secondary fabkit-Text--lg fabkit-Text--regular wishlist-strikeout">$${data.price}</div>
+                                        ` :
+                                        `
+                                            <div class="fabkit-Typography-root fabkit-typography--align-start fabkit-typography--intent-primary fabkit-Text--lg fabkit-Text--regular">$${data.price}</div>
+                                        `
+                                    }
+                                ` 
+                            }
                             </div>
                         </div>
                     </div>
@@ -202,13 +229,14 @@ let wishlistForFab = new function() {
             `;
         }
 
-        function formatSingleWishlistFilter(filter) {
+        function formatSingleWishlistFilter(category) {
             return `
                 <li>
-                    <div class="wishlist-filter-button fabkit-Tag-root fabkit-Tag--md fabkit-Tag--rounded fabkit-Tag--interactive" aria-toggle="false" category-filter="${filter}">
-                        <span class="fabkit-Tag-label">${filter.replace(/-/g, ' ')}</span>
+                    <div class="wishlist-filter-button fabkit-Tag-root fabkit-Tag--md fabkit-Tag--rounded fabkit-Tag--interactive" aria-toggle="false" category-filter="${category}">
+                        <span class="fabkit-Tag-label">${formatCategory(category)}</span>
                     </div>
                 </li>
+                ${ category === 'on-sale' ? `<li>|</li>` : ``}
             `
         }
 
@@ -275,20 +303,32 @@ let wishlistForFab = new function() {
             el_WishlistTab.setAttribute('wishlist-count', wishlistForFab.dataWishlist.length);
             filtersWishlistAvailable = [];
         
-            wishlistForFab.dataWishlist.forEach(data => addWishlistListing(data));
-            
-            populateWishlistFilters();
+            wishlistForFab.dataWishlist.forEach(id => addWishlistListing(id));
         }
         
-        function addWishlistListing(data) {
-            let categoryFormatted = data.category.replace(/ /g, '-');
-            filtersWishlistAvailable.push(categoryFormatted);
-            
-            el_WishlistTab_Content.insertAdjacentHTML('beforeend', formatSingleWishlistListing(data));
+        async function addWishlistListing(id) {
+            el_WishlistTab_Content.insertAdjacentHTML('beforeend', formatSingleWishlistPlaceholder(id));
+            let placeholder = document.querySelector(`.wishlist-placeholder[wishlist-id="${id}"]`);
 
-            let listing = document.querySelector(`.wishlist-listing[wishlist-id="${data.id}"]`);
-            listing.querySelector('.wishlist-listing-toggle').addEventListener('click', () => { 
-                removeFromWishlist(data.id);
+            await getLiveListingData(id).then(data => {
+                placeholder.insertAdjacentHTML('afterend', formatSingleWishlistListing(data));
+                placeholder.remove();
+
+                let listing = document.querySelector(`.wishlist-listing[wishlist-id="${data.id}"]`);
+                listing.querySelector('.wishlist-listing-toggle').addEventListener('click', () => { 
+                    removeFromWishlist(data.id);
+                });
+
+                let isListingOnsale = data.discountedPrice !== null;
+
+                let categoryFormatted = data.category.replace(/ /g, '-');
+                if (filtersWishlistAvailable.indexOf(categoryFormatted) === -1 || isListingOnsale && filtersWishlistAvailable.indexOf('on-sale') === -1) {
+                    if (isListingOnsale) {
+                        filtersWishlistAvailable.push('on-sale');
+                    }
+                    filtersWishlistAvailable.push(categoryFormatted);
+                    populateWishlistFilters();
+                }
             });
         }
 
@@ -307,9 +347,10 @@ let wishlistForFab = new function() {
                 el_WishlistTab_Filters.setAttribute('filters-populated', true);
             }
             
-            filtersWishlistReserve.forEach(filter => {
-                let element = document.querySelector(`.wishlist-filter-button[category-filter="${filter}"]`);
-                if ( filtersWishlistAvailable.includes(filter) ) {
+            filtersWishlistReserve.forEach(category => {
+                let element = document.querySelector(`.wishlist-filter-button[category-filter="${category}"]`);
+
+                if ( filtersWishlistAvailable.includes(category) || category === 'on-sale' ) {
                     element.parentElement.style.display = 'block';
                     return;	
                 }
@@ -344,17 +385,17 @@ let wishlistForFab = new function() {
     //#endregion DOM Manipulation
     //#region Wishlist Functionality
 
-        function addToWishlist(data) {
-            wishlistForFab.dataWishlist.push(data);
+        function addToWishlist(id) {
+            wishlistForFab.dataWishlist.push(id);
 		    setDataToStorage();
 
-            document.querySelectorAll(`[wishlist-id="${data.id}"]`).forEach(element => {
+            document.querySelectorAll(`[wishlist-id="${id}"]`).forEach(element => {
                 element.setAttribute('wishlist-state', 'true');
             });
 
             if (el_WishlistTab !== null) {
                 if (el_WishlistTab.getAttribute('wishlist-populated') === 'true') {
-                    addWishlistListing(data);
+                    addWishlistListing(id);
                 }
                 
                 el_WishlistTab.setAttribute('wishlist-count', wishlistForFab.dataWishlist.length);
@@ -363,7 +404,7 @@ let wishlistForFab = new function() {
         }
 
         function removeFromWishlist(id) {
-            wishlistForFab.dataWishlist = wishlistForFab.dataWishlist.filter((element) => element.id !== id);
+            wishlistForFab.dataWishlist = wishlistForFab.dataWishlist.filter((element) => element !== id);
 		    setDataToStorage();
 
             document.querySelectorAll(`[wishlist-id="${id}"]`).forEach(element => {
@@ -377,8 +418,10 @@ let wishlistForFab = new function() {
                     listing.remove();
                     
                     if ( el_WishlistTab.querySelectorAll(`.wishlist-listing[listing-category="${category}"]`).length === 0 ) {
-                        let arrIndex = filtersWishlistAvailable.indexOf(category);
-                        filtersWishlistAvailable.splice(arrIndex, 1);
+                        filtersWishlistAvailable = filtersWishlistAvailable.filter((element) => element !== category);
+                    }
+                    if ( el_WishlistTab.querySelectorAll(`.wishlist-listing.wishlist-onsale`).length === 0 ) {
+                        filtersWishlistAvailable = filtersWishlistAvailable.filter((element) => element !== 'on-sale');
                     }
                 }
                 
@@ -389,18 +432,9 @@ let wishlistForFab = new function() {
 
         function toggleOnWishlist(id) {
             let stateChange = !wishlistForFab.isInWishlist(id);
-            let data = null;
-
-            if (id === wishlistForFab.idStoreListing) {
-                data = getPageListingData();
-            } else {
-                let element = document.querySelector(selector_StoreListing_Strip + `[wishlist-id="${id}"]`);
-            
-                data = getStoreListingData(element);    
-            }
 
             if (stateChange) { 
-                addToWishlist(data);
+                addToWishlist(id);
                 return;
             }
                 
@@ -456,20 +490,27 @@ let wishlistForFab = new function() {
                 return;
             };
             
-            let previousFilter = document.querySelector(`.wishlist-filter-button[aria-toggle="true"`);
+            let previousFilter = document.querySelector(`.wishlist-filter-button[aria-toggle="true"]:not([category-filter="on-sale"])`);
             let nextFilter = document.querySelector(`.wishlist-filter-button[category-filter="${category}"]`);
             let previousFilterState = nextFilter.getAttribute('aria-toggle') === 'true';
             
-            if (previousFilter !== null) {
+            if (previousFilter !== null && category !== 'on-sale') {
                 previousFilter.setAttribute('aria-toggle', 'false')
             }
-            
-            if (previousFilterState === false) {
+
+            if (category === 'on-sale') {
+                el_WishlistTab.setAttribute('wishlist-filter-onsale', !previousFilterState);
+            } else if (previousFilterState === false) {
                 el_WishlistTab.setAttribute('wishlist-filter', category);
             } else {
-                el_WishlistTab.removeAttribute('wishlist-filter');
+                el_WishlistTab.setAttribute('wishlist-filter', 'false');
             }
             
+            let visibleListingSelector = `.wishlist-listing${
+                (el_WishlistTab.getAttribute('wishlist-filter-onsale') === "true" ? '.wishlist-onsale' : '') +
+                (previousFilterState === false && category !== 'on-sale' ? `[listing-category="${category}"]` : '')
+            }`
+            el_WishlistTab.setAttribute('wishlist-filter-result', document.querySelectorAll(visibleListingSelector).length);
             nextFilter.setAttribute('aria-toggle', !previousFilterState);
         }
 
@@ -519,9 +560,11 @@ let wishlistForFab = new function() {
         window.addEventListener('visibilitychange', () => {
             if (document.hidden === true) return;
             
-            getDataFromStorage();
-            populateAllWishlistListing(true);
-            populateWishlistExport;
+            let hasChange = getDataFromStorage();
+            if (hasChange) {
+                populateAllWishlistListing(true);
+                populateWishlistExport;
+            }
         });
 
         function UpdatePageListingData() {
@@ -539,6 +582,17 @@ let wishlistForFab = new function() {
 
     //#endregion Observers
     //#region Data Storage
+        
+        function arraysEqual(a, b) {
+            if (a === b) return true;
+            if (a == null || b == null) return false;
+            if (a.length !== b.length) return false;
+          
+            for (var i = 0; i < a.length; ++i) {
+              if (a[i] !== b[i]) return false;
+            }
+            return true;
+        }
 
         function setDataToStorage() {
             localStorage.setItem(localStorageName_Wishlist, JSON.stringify(wishlistForFab.dataWishlist));
@@ -546,7 +600,15 @@ let wishlistForFab = new function() {
 
         function getDataFromStorage() {
             let data = localStorage.getItem(localStorageName_Wishlist);
-            wishlistForFab.dataWishlist = data === null ? [] : JSON.parse(data);
+          	data = data === null ? [] : JSON.parse(data)
+
+          	if ( !arraysEqual(wishlistForFab.dataWishlist, data) ) {
+                wishlistForFab.dataWishlist = data;	
+
+                return true;
+          	}
+            
+            return false;
         }
 
     //#endregion Data Storage

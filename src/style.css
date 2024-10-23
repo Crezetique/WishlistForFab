@@ -58,27 +58,29 @@ body[wishlist-tab-state="open"] #tab_wishlist {
   pointer-events: all;
 }
 
-#tab_wishlist:not([wishlist-count="0"]) .wishlist-message-empty {
+#tab_wishlist:not([wishlist-count="0"]) .wishlist-message-empty,
+#tab_wishlist:not([wishlist-filter-result="0"]) .wishlist-message-filter-zero {
 	display: none;
 }
 
-#tab_wishlist[wishlist-filter="2D-Asset"] .wishlist-listing:not([listing-category="2D-Asset"]),
-#tab_wishlist[wishlist-filter="3D-model"] .wishlist-listing:not([listing-category="3D-Model"]),
-#tab_wishlist[wishlist-filter="Animations"] .wishlist-listing:not([listing-category="Animations"]),
-#tab_wishlist[wishlist-filter="Atlases"] .wishlist-listing:not([listing-category="Atlases"]),
-#tab_wishlist[wishlist-filter="Audio"] .wishlist-listing:not([listing-category="Audio"]),
-#tab_wishlist[wishlist-filter="Brushes"] .wishlist-listing:not([listing-category="Brushes"]),
-#tab_wishlist[wishlist-filter="Decals"] .wishlist-listing:not([listing-category="Decals"]),
-#tab_wishlist[wishlist-filter="Education-&-Tutorial"] .wishlist-listing:not([listing-category="Education-&-Tutorial"]),
-#tab_wishlist[wishlist-filter="Environment"] .wishlist-listing:not([listing-category="Environment"]),
-#tab_wishlist[wishlist-filter="Game-Systems"] .wishlist-listing:not([listing-category="Game-Systems"]),
-#tab_wishlist[wishlist-filter="Game-Templates"] .wishlist-listing:not([listing-category="Game-Templates"]),
-#tab_wishlist[wishlist-filter="HDRI"] .wishlist-listing:not([listing-category="HDRI"]),
-#tab_wishlist[wishlist-filter="Material-&-Textures"] .wishlist-listing:not([listing-category="Material-&-Textures"]),
-#tab_wishlist[wishlist-filter="Smart-Assets"] .wishlist-listing:not([listing-category="Smart-Assets"]),
-#tab_wishlist[wishlist-filter="Tool-&-Plugins"] .wishlist-listing:not([listing-category="Tool-&-Plugins"]),
-#tab_wishlist[wishlist-filter="UI"] .wishlist-listing:not([listing-category="UI"]),
-#tab_wishlist[wishlist-filter="VFX"] .wishlist-listing:not([listing-category="VFX"]) { 
+#tab_wishlist[wishlist-filter-onsale="true"] .wishlist-listing:not(.wishlist-onsale),
+#tab_wishlist[wishlist-filter="2d-asset"] .wishlist-listing:not([listing-category="2d-asset"]),
+#tab_wishlist[wishlist-filter="3d-model"] .wishlist-listing:not([listing-category="3d-model"]),
+#tab_wishlist[wishlist-filter="animation"] .wishlist-listing:not([listing-category="animation"]),
+#tab_wishlist[wishlist-filter="atlas"] .wishlist-listing:not([listing-category="atlas"]),
+#tab_wishlist[wishlist-filter="audio"] .wishlist-listing:not([listing-category="audio"]),
+#tab_wishlist[wishlist-filter="brush"] .wishlist-listing:not([listing-category="brush"]),
+#tab_wishlist[wishlist-filter="decal"] .wishlist-listing:not([listing-category="decal"]),
+#tab_wishlist[wishlist-filter="education-tutorial"] .wishlist-listing:not([listing-category="education-tutorial"]),
+#tab_wishlist[wishlist-filter="environment"] .wishlist-listing:not([listing-category="environment"]),
+#tab_wishlist[wishlist-filter="game-system"] .wishlist-listing:not([listing-category="game-system"]),
+#tab_wishlist[wishlist-filter="game-template"] .wishlist-listing:not([listing-category="game-template"]),
+#tab_wishlist[wishlist-filter="hdri"] .wishlist-listing:not([listing-category="hdri"]),
+#tab_wishlist[wishlist-filter="material"] .wishlist-listing:not([listing-category="material"]),
+#tab_wishlist[wishlist-filter="smart-asset"] .wishlist-listing:not([listing-category="smart-asset"]),
+#tab_wishlist[wishlist-filter="tool-and-plugin"] .wishlist-listing:not([listing-category="tool-and-plugin"]),
+#tab_wishlist[wishlist-filter="ui"] .wishlist-listing:not([listing-category="ui"]),
+#tab_wishlist[wishlist-filter="vfx"] .wishlist-listing:not([listing-category="vfx"]) { 
     display: none; 
 }
 
@@ -100,5 +102,13 @@ body[wishlist-tab-state="open"] #tab_wishlist {
 }
 
 #wishlist_import[aria-hidden="true"], #wishlist_export[aria-hidden="true"] {
-	display: none;
+	  display: none;
+}
+
+.wishlist-capitalize {
+    text-transform: capitalize;
+}
+
+.wishlist-strikeout {
+    text-decoration: strikeout;
 }
