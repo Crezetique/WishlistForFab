@@ -1,0 +1,104 @@
+body {
+	--colors-fill-default-wishlist: #ff61ea;
+	--colors-fill-active-wishlist: #ff94f1;
+}
+
+body[wishlist-tab-state="open"] {
+	overflow: hidden;
+}
+
+#button_wishlist[wishlist-state="true"] {
+  --_Button_color: var(--colors-text-on-accent);
+  --_Button_backgroundColor: var(--colors-fill-default-wishlist);
+  --_Button--hover_backgroundColor: var(--colors-fill-active-wishlist);
+  --_Button--active_backgroundColor: var(--colors-fill-default-wishlist);
+  --_Button--disabled_backgroundColor: var(--colors-fill-disabled-primary);
+}
+
+#button_wishlist[wishlist-state="true"] span.add,
+#button_wishlist:not([wishlist-state="true"]) span.remove {
+	display: none;
+}
+
+body[wishlist-tab-state="open"] #megamenu_wishlistToggle .fabicon-heart,
+body:not([wishlist-tab-state="open"]) #megamenu_wishlistToggle .fabicon-heart-filled,
+[wishlist-id][wishlist-state="true"] .fabicon-heart,
+[wishlist-id]:not([wishlist-state="true"]) .fabicon-heart-filled {
+	display: none;
+}
+
+#megamenu_wishlistToggle .fabicon-heart-filled,
+[wishlist-id] .fabicon-heart-filled {
+	color: var(--colors-fill-default-wishlist);
+}
+
+#tab_wishlist {
+  height: 0;
+  width: 100%;
+  background: var(--colors-background-elevated-low-default);
+	opacity: 0;
+	top: 72px;
+	top: var(--DefaultLayout-header_size, 72px);
+	position: fixed;
+  z-index: 10;
+  pointer-events: none;
+  transition: opacity .35s ease, min-height 0s ease .35s;
+  overflow: auto;
+}
+
+#tab_wishlist .title-sub { 
+	margin-left: 5px;
+}
+
+body[wishlist-tab-state="open"] #tab_wishlist {
+	opacity: 1;
+  min-height: calc(100vh - 72px);
+  min-height: calc(100vh - var(--DefaultLayout-header_size, 72px));
+  transition: opacity .35s ease, min-height 0s ease;
+  pointer-events: all;
+}
+
+#tab_wishlist:not([wishlist-count="0"]) .wishlist-message-empty {
+	display: none;
+}
+
+#tab_wishlist[wishlist-filter="2D-Asset"] .wishlist-listing:not([listing-category="2D-Asset"]),
+#tab_wishlist[wishlist-filter="3D-model"] .wishlist-listing:not([listing-category="3D-Model"]),
+#tab_wishlist[wishlist-filter="Animations"] .wishlist-listing:not([listing-category="Animations"]),
+#tab_wishlist[wishlist-filter="Atlases"] .wishlist-listing:not([listing-category="Atlases"]),
+#tab_wishlist[wishlist-filter="Audio"] .wishlist-listing:not([listing-category="Audio"]),
+#tab_wishlist[wishlist-filter="Brushes"] .wishlist-listing:not([listing-category="Brushes"]),
+#tab_wishlist[wishlist-filter="Decals"] .wishlist-listing:not([listing-category="Decals"]),
+#tab_wishlist[wishlist-filter="Education-&-Tutorial"] .wishlist-listing:not([listing-category="Education-&-Tutorial"]),
+#tab_wishlist[wishlist-filter="Environment"] .wishlist-listing:not([listing-category="Environment"]),
+#tab_wishlist[wishlist-filter="Game-Systems"] .wishlist-listing:not([listing-category="Game-Systems"]),
+#tab_wishlist[wishlist-filter="Game-Templates"] .wishlist-listing:not([listing-category="Game-Templates"]),
+#tab_wishlist[wishlist-filter="HDRI"] .wishlist-listing:not([listing-category="HDRI"]),
+#tab_wishlist[wishlist-filter="Material-&-Textures"] .wishlist-listing:not([listing-category="Material-&-Textures"]),
+#tab_wishlist[wishlist-filter="Smart-Assets"] .wishlist-listing:not([listing-category="Smart-Assets"]),
+#tab_wishlist[wishlist-filter="Tool-&-Plugins"] .wishlist-listing:not([listing-category="Tool-&-Plugins"]),
+#tab_wishlist[wishlist-filter="UI"] .wishlist-listing:not([listing-category="UI"]),
+#tab_wishlist[wishlist-filter="VFX"] .wishlist-listing:not([listing-category="VFX"]) { 
+    display: none; 
+}
+
+#tab_wishlist_export:hover,
+.wishlist-filter-button:hover { 
+    background: var(--colors-fill-secondary-elevated-default); 
+}
+#tab_wishlist_export[aria-toggle="true"],
+.wishlist-filter-button[aria-toggle="true"] { 
+    background: var(--colors-fill-default-wishlist); 
+}
+#tab_wishlist_export[aria-toggle="true"]:hover,
+.wishlist-filter-button[aria-toggle="true"]:hover { 
+    background: var(--colors-fill-active-wishlist); 
+}
+
+#wishlist_import, #wishlist_export {
+    height: 300px; 
+}
+
+#wishlist_import[aria-hidden="true"], #wishlist_export[aria-hidden="true"] {
+	display: none;
+}
