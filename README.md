@@ -34,4 +34,5 @@ Any browser extention that "injects javascript and css to specified website" is 
 - For Chrome users: https://chromewebstore.google.com/detail/user-javascript-and-css/nbhcbdghjpllgmfilhnhkllmkecfmpld
 - For Firefox users: https://addons.mozilla.org/en-US/firefox/addon/codeinjector/
 
-Specify `https://www.fab.com/*` as a wildcard domain target for the script injection.
+1. Specify `https://www.fab.com/*` as the domain target for the script injection.
+2. Copy javascript and css over from the repo /src folder.

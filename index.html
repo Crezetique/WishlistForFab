@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="google-site-verification" content="SHYRz0doJUTL0wpXyPNEW25Cu5ryDSmu_qCahM0ut9E" />
+
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+        <title>Wishlist For Fab | WishlistForFab</title>
+        <meta name="generator" content="Jekyll v3.10.0" />
+        <meta property="og:title" content="Wishlist For Fab" />
+        <meta property="og:locale" content="en_US" />
+        <meta name="description" content="A quick custom Wishlist Feature implementation to the Epic Games Fab marketplace." />
+        <meta property="og:description" content="A quick custom Wishlist Feature implementation to the Epic Games Fab marketplace." />
+        <link rel="canonical" href="https://crezetique.github.io/WishlistForFab/" />
+        <meta property="og:url" content="https://crezetique.github.io/WishlistForFab/" />
+        <meta property="og:site_name" content="WishlistForFab" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary" />
+        <meta property="twitter:title" content="Wishlist For Fab" />
+        <script type="application/ld+json">
+        {"@context":"https://schema.org","@type":"WebSite","description":"A quick custom Wishlist Feature implementation to the Epic Games Fab marketplace.","headline":"Wishlist For Fab","name":"WishlistForFab","url":"https://crezetique.github.io/WishlistForFab/"}</script>
+        <!-- End Jekyll SEO tag -->
+
+        <link rel="stylesheet" href="/WishlistForFab/assets/css/style.css?v=7edb8ba198a278222d0500dde4a3382c76e3a0af">
+        <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+    </head>
+    <body>
+        <div class="container-lg px-3 my-5 markdown-body">
+        
+            <h1 id="wishlist-for-fab">Wishlist For Fab</h1>
+            <p><a href="https://github.com/Crezetique/WishlistForFab">View Github Repository</a></p>
+
+            <p>A custom Wishlist Feature implementation to the Epic Games Fab marketplace.</p>
+            <p>The Epic Games Fab marketplace currently lacks the ability to wishlist content. Hence, this repo was hastily written as an interim solution. This may or may not be properly rewritten/ improved in the future, feel free to submit changes with a PR.</p>
+
+            <hr />
+
+            <h2 id="demo-video">Demo Video</h2>
+            <video src="https://github.com/user-attachments/assets/49690655-dd32-466e-9a16-2b454ec423a4" data-canonical-src="https://github.com/user-attachments/assets/49690655-dd32-466e-9a16-2b454ec423a4" controls="controls" muted="muted" class="d-block rounded-bottom-2 width-fit" style="max-height:640px;" autoplay></video>
+
+            <hr />
+
+            <h3 id="disclaimer">Disclaimer</h3>
+            <ol>
+                <li>Data is stored within Fab.com as browser local storage. <em><strong>All data will be lost should local data be cleared.</strong></em></li>
+                <li>As this directly injects and manipulates website content on the Fab Marketplace, please self vet the source code and <em><strong>be wary of malicious pull requests and forks</strong></em>.</li>
+            </ol>
+
+            <h3 id="features">Features</h3>
+            <ul>
+                <li>Add to wishlist</li>
+                <li>Wishlist page</li>
+                <li>Filter wishlist items by On Sale and Category Tag</li>
+                <li>Export wishlist Product UID</li>
+                <li>Data stored as browser local storage.</li>
+            </ul>
+
+            <h3 id="potential-future-plans">(Potential) Future Plans</h3>
+            <ul>
+                <li>Filter products by Tags.</li>
+                <li>Asyncronous on-demand paginate load (Currently loads entire wishlist at one go).</li>
+                <li>Import feature on Wishlist page. Should you need to import a wishlist, save the JSON under the localStorage name “wishlistCustom”.</li>
+                <li>Compiled as standalone browser addon.</li>
+            </ul>
+
+            <h3 id="installation">Installation</h3>
+            <p>Any browser extention that “injects javascript and css to specified website” is required for installation.</p>
+
+            <ul>
+                <li>For Chrome users: https://chromewebstore.google.com/detail/user-javascript-and-css/nbhcbdghjpllgmfilhnhkllmkecfmpld</li>
+                <li>For Firefox users: https://addons.mozilla.org/en-US/firefox/addon/codeinjector/</li>
+            </ul>
+
+            <ol>
+                <li>Specify <code class="language-plaintext highlighter-rouge">https://www.fab.com/*</code> as a wildcard domain target for the script injection.</li>
+                <li>Copy javascript and css over from the repo /src folder.</li>
+            </ol>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+        <script>anchors.add();</script>
+    </body>
+</html>
